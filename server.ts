@@ -1055,6 +1055,10 @@ async function startServer() {
   });
 }
 
-startServer().catch((err) => {
-  console.error('Failed to start server:', err);
-});
+if (process.env.NODE_ENV !== 'production') {
+  startServer();
+} else if (!process.env.VERCEL) {
+  startServer();
+}
+
+export default app;
