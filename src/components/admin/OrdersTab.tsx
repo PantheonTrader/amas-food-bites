@@ -282,14 +282,14 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ adminPin, settings }) => {
                 <div className="flex items-center gap-2">
                   <a
                     href={`https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                      `Hello ${order.customerName}, this is ${settings.restaurantName} regarding your order #${order.orderNumber}. We have received your order and its status is: ${order.status}.`
+                      `Hello ${order.customerName}, this is ${settings.restaurantName}! Here is your confirmed order summary for Order #${order.orderNumber} (Status: ${order.status.toUpperCase()}):\n\n${order.whatsappMessage}`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-lg border border-emerald-200 font-semibold transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3.5 py-2 rounded-xl border border-emerald-200 font-bold transition-colors cursor-pointer shadow-xs"
                   >
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span>Message Customer</span>
+                    <MessageSquare className="w-4 h-4" />
+                    <span>Message Customer (Order Details)</span>
                   </a>
                 </div>
               </div>
