@@ -160,16 +160,24 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
             </div>
           </div>
 
-          {/* WhatsApp Direct Message Actions */}
+          {/* WhatsApp Direct Message & Picture Receipt Actions */}
           <div className="space-y-3 pt-2">
+            <button
+              onClick={() => setShowReceipt(true)}
+              className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-black text-white py-3.5 px-4 rounded-xl font-bold shadow-md cursor-pointer transition-colors text-sm"
+            >
+              <ShieldCheck className="w-5 h-5 text-emerald-400" />
+              <span>View & Share Picture Receipt (PNG)</span>
+            </button>
+
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 bg-[#00875A] hover:bg-[#00704A] text-white py-4 px-4 rounded-xl font-bold shadow-md cursor-pointer transition-colors text-sm"
+              className="w-full flex items-center justify-center gap-2 bg-[#00875A] hover:bg-[#00704A] text-white py-3.5 px-4 rounded-xl font-bold shadow-md cursor-pointer transition-colors text-sm"
             >
               <MessageCircle className="w-5 h-5" />
-              <span>Send Order to WhatsApp Now</span>
+              <span>Send WhatsApp Text Message</span>
             </a>
 
             <button
@@ -188,9 +196,6 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
                 </>
               )}
             </button>
-            <p className="text-[11px] text-slate-500 text-center px-2">
-              💬 <strong className="text-slate-700">Standard WhatsApp Message:</strong> Sends as a direct text message where any edits or updates will show as edited on WhatsApp.
-            </p>
           </div>
         </div>
 

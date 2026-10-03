@@ -282,6 +282,14 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ adminPin, settings }) => {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setSelectedReceiptOrder(order)}
+                    className="flex items-center gap-1.5 text-xs bg-slate-900 hover:bg-black text-white px-3.5 py-2 rounded-xl font-bold transition-colors cursor-pointer shadow-xs"
+                  >
+                    <FileText className="w-4 h-4 text-emerald-400" />
+                    <span>View Picture Receipt</span>
+                  </button>
+
                   <a
                     href={`https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
                       `Hello ${order.customerName}, this is ${settings.restaurantName} regarding your order #${order.orderNumber}. We have received your order and its status is: ${order.status}.`
