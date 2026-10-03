@@ -243,6 +243,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <SettingsTab
               settings={settings}
               adminPin={adminPin}
+              currentUser={currentUser}
               onRefreshData={onRefreshData}
               onPinChanged={onPinChanged}
             />

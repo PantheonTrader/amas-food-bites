@@ -22,6 +22,7 @@ import { updateSettings, fetchAccounts, updateAccounts } from '../../api';
 interface SettingsTabProps {
   settings: AppSettings;
   adminPin: string;
+  currentUser?: UserAccount | null;
   onRefreshData: () => void;
   onPinChanged: (newPin: string) => void;
 }
@@ -29,9 +30,11 @@ interface SettingsTabProps {
 export const SettingsTab: React.FC<SettingsTabProps> = ({
   settings,
   adminPin,
+  currentUser,
   onRefreshData,
   onPinChanged,
 }) => {
+  const isManager = currentUser?.role === 'manager';
   // General settings state
   const [restaurantName, setRestaurantName] = useState<string>(settings.restaurantName);
   const [tagline, setTagline] = useState<string>(settings.tagline);
@@ -562,104 +565,118 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
         </button>
       </form>
 
-      {/* 3. Master PIN Change Form */}
-      <form
-        onSubmit={handleChangePin}
-        className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-xs space-y-6"
-      >
-        <div className="border-b border-slate-100 pb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-800 flex items-center justify-center font-bold">
-              <KeyRound className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-lg font-black font-display text-slate-900">
-                Change Master Admin PIN
-              </h3>
-              <p className="text-xs text-slate-500">
-                Update the 4-digit master PIN used for quick bypass.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {pinError && (
-          <div className="p-3.5 bg-red-50 text-red-700 text-xs rounded-xl border border-red-200 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{pinError}</span>
-          </div>
-        )}
-
-        {pinSuccess && (
-          <div className="p-3.5 bg-emerald-50 text-emerald-800 text-xs rounded-xl border border-emerald-200 flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
-            <span>{pinSuccess}</span>
-          </div>
-        )}
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
-              Current PIN *
-            </label>
-            <input
-              type="password"
-              inputMode="numeric"
-              required
-              value={currentPin}
-              onChange={(e) => setCurrentPin(e.target.value)}
-              placeholder="••••"
-              className="w-full text-xs sm:text-sm font-mono tracking-widest px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#9D1D11]"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                New PIN (at least 4 digits) *
-              </label>
-              <input
-                type="password"
-                inputMode="numeric"
-                required
-                minLength={4}
-                value={newPin}
-                onChange={(e) => setNewPin(e.target.value)}
-                placeholder="••••"
-                className="w-full text-xs sm:text-sm font-mono tracking-widest px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#9D1D11]"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Confirm New PIN *
-              </label>
-              <input
-                type="password"
-                inputMode="numeric"
-                required
-                minLength={4}
-                value={confirmPin}
-                onChange={(e) => setConfirmPin(e.target.value)}
-                placeholder="••••"
-                className="w-full text-xs sm:text-sm font-mono tracking-widest px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#9D1D11]"
-              />
-            </div>
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          disabled={savingPin}
-          className="bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+      {/* 3. Master PIN Change Form (Restricted for Admin Manager) */}
+      {!isManager ? (
+        <form
+          onSubmit={handleChangePin}
+          className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-xs space-y-6"
         >
-          {savingPin ? (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <span>Save Master PIN</span>
+          <div className="border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-800 flex items-center justify-center font-bold">
+                <KeyRound className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black font-display text-slate-900">
+                  Change Master Admin PIN
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Update the 4-digit master PIN used for quick bypass.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {pinError && (
+            <div className="p-3.5 bg-red-50 text-red-700 text-xs rounded-xl border border-red-200 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{pinError}</span>
+            </div>
           )}
-        </button>
-      </form>
+
+          {pinSuccess && (
+            <div className="p-3.5 bg-emerald-50 text-emerald-800 text-xs rounded-xl border border-emerald-200 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <span>{pinSuccess}</span>
+            </div>
+          )}
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Current PIN *
+              </label>
+              <input
+                type="password"
+                inputMode="numeric"
+                required
+                value={currentPin}
+                onChange={(e) => setCurrentPin(e.target.value)}
+                placeholder="••••"
+                className="w-full text-xs sm:text-sm font-mono tracking-widest px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#9D1D11]"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  New PIN (at least 4 digits) *
+                </label>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  required
+                  minLength={4}
+                  value={newPin}
+                  onChange={(e) => setNewPin(e.target.value)}
+                  placeholder="••••"
+                  className="w-full text-xs sm:text-sm font-mono tracking-widest px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#9D1D11]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Confirm New PIN *
+                </label>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  required
+                  minLength={4}
+                  value={confirmPin}
+                  onChange={(e) => setConfirmPin(e.target.value)}
+                  placeholder="••••"
+                  className="w-full text-xs sm:text-sm font-mono tracking-widest px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#9D1D11]"
+                />
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={savingPin}
+            className="bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+          >
+            {savingPin ? (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <span>Save Master PIN</span>
+            )}
+          </button>
+        </form>
+      ) : (
+        <div className="bg-white p-7 rounded-3xl border border-slate-200 shadow-xs text-center space-y-3">
+          <div className="w-10 h-10 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center mx-auto">
+            <Shield className="w-5 h-5 text-slate-700" />
+          </div>
+          <h3 className="text-base font-black font-display text-slate-900">
+            Master PIN & Security Protected
+          </h3>
+          <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+            As an Admin Manager, you have full access to update store settings, menu items, categories, and manage orders. However, viewing, changing, or resetting the <strong>Master Admin PIN</strong> is restricted exclusively to the Master Admin / Owner.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
