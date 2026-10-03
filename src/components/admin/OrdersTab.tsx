@@ -284,23 +284,11 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ adminPin, settings }) => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setSelectedReceiptOrder(order)}
-                    className="flex items-center gap-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 font-semibold transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 text-xs bg-[#00875A] hover:bg-[#00704A] text-white px-3.5 py-2 rounded-xl font-bold transition-colors cursor-pointer shadow-xs"
                   >
-                    <FileText className="w-3.5 h-3.5 text-slate-600" />
-                    <span>View Receipt</span>
+                    <FileText className="w-4 h-4 text-emerald-200" />
+                    <span>Share Picture Receipt</span>
                   </button>
-
-                  <a
-                    href={`https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                      `Hello ${order.customerName}, this is ${settings.restaurantName} regarding your order #${order.orderNumber}. We have received your order and its status is: ${order.status}.`
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-lg border border-emerald-200 font-semibold transition-colors cursor-pointer"
-                  >
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span>Message</span>
-                  </a>
                 </div>
               </div>
             </div>

@@ -160,30 +160,18 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
             </div>
           </div>
 
-          {/* WhatsApp & Picture Receipt Helper Actions */}
+          {/* Picture Receipt Only Action */}
           <div className="space-y-3 pt-2">
-            {/* Primary Action: View & Download Picture Receipt */}
             <button
               onClick={() => setShowReceipt(true)}
-              className="w-full flex items-center justify-center gap-2 bg-[#00875A] hover:bg-[#00704A] text-white py-3.5 px-4 rounded-xl font-bold shadow-md cursor-pointer transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-[#00875A] hover:bg-[#00704A] text-white py-4 px-4 rounded-xl font-bold shadow-md cursor-pointer transition-colors text-sm"
             >
               <ShieldCheck className="w-5 h-5 text-emerald-300" />
-              <span>View & Share Picture Receipt (PNG)</span>
+              <span>Share Unalterable Picture Receipt (PNG)</span>
             </button>
             <p className="text-[11px] text-slate-500 text-center px-2">
-              💡 <strong className="text-slate-700">Why picture receipt?</strong> WhatsApp links only support text. To send an unalterable picture that cannot be edited, open the picture receipt above and share it as an image file!
+              🔒 <strong className="text-slate-700">100% Secure:</strong> This generates an unalterable picture receipt image. When shared to WhatsApp, it appears directly as a photo with zero editable text!
             </p>
-
-            {/* Secondary Action: Standard WhatsApp text link */}
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 px-4 rounded-xl font-semibold text-xs transition-colors cursor-pointer"
-            >
-              <MessageCircle className="w-4 h-4 text-slate-500" />
-              <span>Or Open WhatsApp Chat (Text Mode)</span>
-            </a>
           </div>
         </div>
 
