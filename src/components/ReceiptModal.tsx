@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Download, CheckCircle2, X, UtensilsCrossed, ShieldCheck, Printer } from 'lucide-react';
+import { Download, CheckCircle2, X, UtensilsCrossed, ShieldCheck, Printer, MessageCircle } from 'lucide-react';
 import { Order, AppSettings } from '../types';
 import html2canvas from 'html2canvas';
 
@@ -13,7 +13,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, settings, onC
   const receiptRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState<boolean>(false);
 
-  const handleDownloadImage = async () => {
+  const handleShareImage = async () => {
     if (!receiptRef.current) return;
     setDownloading(true);
     try {
@@ -22,13 +22,26 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, settings, onC
         backgroundColor: '#ffffff',
         logging: false,
       });
-      const image = canvas.toDataURL('image/png');
-      const a = document.createElement('a');
-      a.href = image;
-      a.download = `Receipt-${order.orderNumber}-${settings.restaurantName.replace(/\s+/g, '_')}.png`;
-      a.click();
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        const file = new File([blob], `Receipt-${order.orderNumber}.png`, { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: `Order Receipt #${order.orderNumber}`,
+            text: `Official verified receipt for order #${order.orderNumber} at ${settings.restaurantName}`,
+          });
+        } else {
+          // Fallback to download
+          const image = canvas.toDataURL('image/png');
+          const a = document.createElement('a');
+          a.href = image;
+          a.download = `Receipt-${order.orderNumber}.png`;
+          a.click();
+        }
+      }, 'image/png');
     } catch (err) {
-      console.error('Failed to generate receipt image', err);
+      console.error('Failed to share receipt image', err);
     } finally {
       setDownloading(false);
     }
@@ -180,25 +193,25 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, settings, onC
         </div>
 
         {/* Modal Footer Actions */}
-        <div className="p-4 bg-white border-t border-slate-200 flex items-center justify-between gap-3">
+        <div className="p-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center gap-2">
           <button
             onClick={onClose}
-            className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-xs transition-colors cursor-pointer"
+            className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 px-4 rounded-xl font-bold text-xs transition-colors cursor-pointer"
           >
             Close
           </button>
           
           <button
-            onClick={handleDownloadImage}
+            onClick={handleShareImage}
             disabled={downloading}
-            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+            className="w-full sm:flex-1 bg-[#00875A] hover:bg-[#00704A] text-white py-3 px-4 rounded-xl font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
           >
             {downloading ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
-                <Download className="w-4 h-4" />
-                <span>Download Picture Receipt</span>
+                <MessageCircle className="w-4 h-4" />
+                <span>Share Picture Receipt to WhatsApp</span>
               </>
             )}
           </button>
