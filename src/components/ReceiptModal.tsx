@@ -23,16 +23,17 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, settings, onC
         logging: false,
         useCORS: true,
         onclone: (clonedDoc) => {
-          const allEls = clonedDoc.querySelectorAll('*');
-          allEls.forEach((el) => {
-            const htmlEl = el as HTMLElement;
-            if (htmlEl && htmlEl.style) {
-              const bg = window.getComputedStyle(htmlEl).backgroundColor;
-              if (bg && bg.includes('oklch')) htmlEl.style.backgroundColor = '#ffffff';
-              const col = window.getComputedStyle(htmlEl).color;
-              if (col && col.includes('oklch')) htmlEl.style.color = '#1e293b';
-            }
-          });
+          // Remove all stylesheets and style tags that contain oklch
+          const stylesheets = clonedDoc.querySelectorAll('style, link[rel="stylesheet"]');
+          stylesheets.forEach((s) => s.remove());
+
+          // Apply clean inline fallback colors to receipt elements
+          const receiptCard = clonedDoc.getElementById('receipt-card');
+          if (receiptCard) {
+            receiptCard.style.backgroundColor = '#ffffff';
+            receiptCard.style.color = '#1e293b';
+            receiptCard.style.fontFamily = 'sans-serif';
+          }
         },
       });
       canvas.toBlob(async (blob) => {
@@ -84,6 +85,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, settings, onC
           {/* Actual Receipt Card to Capture as Image */}
           <div
             ref={receiptRef}
+            id="receipt-card"
             className="bg-white w-full max-w-sm rounded-2xl p-6 shadow-md border border-slate-200 font-sans text-slate-800 space-y-4 relative"
             style={{ width: '380px' }}
           >
