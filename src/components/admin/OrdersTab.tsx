@@ -280,17 +280,46 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ adminPin, settings }) => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <a
-                    href={`https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                      `Hello ${order.customerName}, this is ${settings.restaurantName}! Here is your confirmed order summary for Order #${order.orderNumber} (Status: ${order.status.toUpperCase()}):\n\n${order.whatsappMessage}`
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3.5 py-2 rounded-xl border border-emerald-200 font-bold transition-colors cursor-pointer shadow-xs"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    <span>Message Customer (Order Details)</span>
-                  </a>
+                  {(() => {
+                    const breakdown = order.whatsappMessage && !order.whatsappMessage.includes('undefined')
+                      ? order.whatsappMessage
+                      : [
+                          `🍽️ *${settings.restaurantName.toUpperCase()} — ORDER RECEIPT*`,
+                          `*Order ID:* ${order.orderNumber}`,
+                          `*Status:* ${order.status}`,
+                          `---------------------------------`,
+                          `*ITEMS ORDERED:*`,
+                          ...(order.items || []).map((item, idx) => {
+                            let line = `${idx + 1}. *${item.quantity}x ${item.name}*`;
+                            if (item.addonName) line += ` + ${item.addonName}`;
+                            const itemTotal = (item.price + (item.addonPrice || 0)) * item.quantity;
+                            line += ` — ${settings.currencySymbol}${itemTotal.toLocaleString()}`;
+                            return line;
+                          }),
+                          `---------------------------------`,
+                          `*Subtotal:* ${settings.currencySymbol}${order.subtotal.toLocaleString()}`,
+                          order.deliveryFee > 0 ? `*Delivery Fee:* ${settings.currencySymbol}${order.deliveryFee.toLocaleString()}` : null,
+                          `*TOTAL:* *${settings.currencySymbol}${order.total.toLocaleString()}*`,
+                          `---------------------------------`,
+                          `Thank you for ordering with ${settings.restaurantName}! 🙏`
+                        ].filter(Boolean).join('\n');
+
+                    const waUrl = `https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                      `Hello ${order.customerName}, this is ${settings.restaurantName}! Here is the breakdown of your order:\n\n${breakdown}`
+                    )}`;
+
+                    return (
+                      <a
+                        href={waUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3.5 py-2 rounded-xl border border-emerald-200 font-bold transition-colors cursor-pointer shadow-xs"
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                        <span>Message Customer (Order Breakdown)</span>
+                      </a>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
