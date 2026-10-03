@@ -287,9 +287,43 @@ export async function placeOrder(orderPayload: {
     db.orders.unshift(newOrder);
     saveLocalDb(db);
 
-    const whatsappMessage = `*NEW ORDER #${newOrder.orderNumber}* (${newOrder.deliveryType.toUpperCase()})
-Customer: ${newOrder.customerName} (${newOrder.customerPhone})
-Total: ${db.settings.currencySymbol}${newOrder.total.toLocaleString()}`;
+    const secureHash = 'SEC-' + Math.random().toString(36).substring(2, 8).toUpperCase() + '-' + newOrder.orderNumber;
+    const lines: string[] = [];
+    lines.push(`🍔 *NEW ORDER — ${db.settings.restaurantName.toUpperCase()}* 🍔`);
+    lines.push(`*Order ID:* ${newOrder.orderNumber}`);
+    lines.push(`*Date:* ${new Date(newOrder.createdAt).toLocaleString('en-GB')}`);
+    lines.push(`---------------------------------`);
+    lines.push(`*CUSTOMER DETAILS:*`);
+    lines.push(`👤 *Name:* ${newOrder.customerName}`);
+    lines.push(`📞 *Phone:* ${newOrder.customerPhone}`);
+    lines.push(`📍 *Type:* ${newOrder.deliveryType === 'delivery' ? 'Home Delivery' : 'Pickup at Restaurant'}`);
+    if (newOrder.deliveryType === 'delivery' && newOrder.deliveryAddress) {
+      lines.push(`🏠 *Address:* ${newOrder.deliveryAddress}`);
+    }
+    if (newOrder.notes && newOrder.notes.trim()) {
+      lines.push(`📝 *Order Note:* ${newOrder.notes.trim()}`);
+    }
+    lines.push(`---------------------------------`);
+    lines.push(`*ITEMS ORDERED:*`);
+    newOrder.items.forEach((item: any, index: number) => {
+      let itemLine = `${index + 1}. *${item.quantity}x ${item.name}*`;
+      const itemTotal = item.price * item.quantity;
+      itemLine += ` — ${db.settings.currencySymbol}${itemTotal.toLocaleString()}`;
+      lines.push(itemLine);
+    });
+    lines.push(`---------------------------------`);
+    lines.push(`*Subtotal:* ${db.settings.currencySymbol}${newOrder.subtotal.toLocaleString()}`);
+    if (newOrder.deliveryType === 'delivery') {
+      lines.push(`*Delivery Fee:* ${db.settings.currencySymbol}${newOrder.deliveryFee.toLocaleString()}`);
+    }
+    lines.push(`*GRAND TOTAL:* *${db.settings.currencySymbol}${newOrder.total.toLocaleString()}*`);
+    lines.push(`---------------------------------`);
+    lines.push(`🔒 *Secure Verification Code:* ${secureHash}`);
+    lines.push(`*(Cross-check with Admin Dashboard to confirm authenticity)*`);
+    lines.push(`---------------------------------`);
+    lines.push(`Please confirm this order and provide estimated preparation time. Thank you!`);
+
+    const whatsappMessage = lines.join('\n');
     const whatsappUrl = `https://wa.me/${db.settings.whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
     return {

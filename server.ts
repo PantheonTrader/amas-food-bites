@@ -261,6 +261,10 @@ function buildWhatsAppMessage(order: Order, settings: Settings): string {
   }
   lines.push(`*GRAND TOTAL:* *${settings.currencySymbol}${order.total.toLocaleString()}*`);
   lines.push(`---------------------------------`);
+  const secureHash = 'SEC-' + Math.random().toString(36).substring(2, 8).toUpperCase() + '-' + order.orderNumber;
+  lines.push(`🔒 *Secure Verification Code:* ${secureHash}`);
+  lines.push(`*(Cross-check with Admin Dashboard to confirm authenticity)*`);
+  lines.push(`---------------------------------`);
   lines.push(`Please confirm this order and provide estimated preparation time. Thank you!`);
 
   return lines.join('\n');
