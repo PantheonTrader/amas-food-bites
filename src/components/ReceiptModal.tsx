@@ -42,7 +42,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, settings, onC
           await navigator.share({
             files: [file],
             title: `Order Receipt #${order.orderNumber}`,
-            text: `Official verified receipt for order #${order.orderNumber} at ${settings.restaurantName}`,
+            text: order.whatsappMessage || `Official verified receipt for order #${order.orderNumber} at ${settings.restaurantName}`,
           });
         } else {
           // Fallback to download
