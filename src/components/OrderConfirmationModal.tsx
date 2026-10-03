@@ -160,42 +160,30 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
             </div>
           </div>
 
-          {/* WhatsApp Helper Actions */}
-          <div className="space-y-2 pt-2">
+          {/* WhatsApp & Picture Receipt Helper Actions */}
+          <div className="space-y-3 pt-2">
+            {/* Primary Action: View & Download Picture Receipt */}
+            <button
+              onClick={() => setShowReceipt(true)}
+              className="w-full flex items-center justify-center gap-2 bg-[#00875A] hover:bg-[#00704A] text-white py-3.5 px-4 rounded-xl font-bold shadow-md cursor-pointer transition-colors"
+            >
+              <ShieldCheck className="w-5 h-5 text-emerald-300" />
+              <span>View & Share Picture Receipt (PNG)</span>
+            </button>
+            <p className="text-[11px] text-slate-500 text-center px-2">
+              💡 <strong className="text-slate-700">Why picture receipt?</strong> WhatsApp links only support text. To send an unalterable picture that cannot be edited, open the picture receipt above and share it as an image file!
+            </p>
+
+            {/* Secondary Action: Standard WhatsApp text link */}
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 bg-[#00875A] hover:bg-[#00704A] text-white py-3 px-4 rounded-xl font-bold shadow-md cursor-pointer transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 px-4 rounded-xl font-semibold text-xs transition-colors cursor-pointer"
             >
-              <MessageCircle className="w-4 h-4" />
-              <span>Open WhatsApp Conversation</span>
+              <MessageCircle className="w-4 h-4 text-slate-500" />
+              <span>Or Open WhatsApp Chat (Text Mode)</span>
             </a>
-
-            <button
-              onClick={() => setShowReceipt(true)}
-              className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-black text-white py-3 px-4 rounded-xl font-bold shadow-md cursor-pointer transition-colors"
-            >
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>View Official Picture Receipt (PNG)</span>
-            </button>
-
-            <button
-              onClick={handleCopyMessage}
-              className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 px-4 rounded-xl font-semibold transition-colors cursor-pointer"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-4 h-4 text-emerald-600" />
-                  <span className="text-emerald-700">Message Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-4 h-4 text-slate-500" />
-                  <span>Copy Order Message Text</span>
-                </>
-              )}
-            </button>
           </div>
         </div>
 
