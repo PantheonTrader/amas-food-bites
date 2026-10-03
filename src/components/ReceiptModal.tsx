@@ -16,25 +16,28 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, settings, onC
   const handleShareImage = async () => {
     if (!receiptRef.current) return;
     setDownloading(true);
+
+    const originalGetComputedStyle = window.getComputedStyle;
+    window.getComputedStyle = function (elt: Element, pseudoElt?: string | null) {
+      const style = originalGetComputedStyle.call(window, elt, pseudoElt);
+      return new Proxy(style, {
+        get(target, prop, receiver) {
+          const val = Reflect.get(target, prop, receiver);
+          if (typeof val === 'string' && val.includes('oklch')) {
+            if (String(prop).toLowerCase().includes('background')) return '#ffffff';
+            return '#1e293b';
+          }
+          return val;
+        },
+      });
+    };
+
     try {
       const canvas = await html2canvas(receiptRef.current, {
         scale: 2,
         backgroundColor: '#ffffff',
         logging: false,
         useCORS: true,
-        onclone: (clonedDoc) => {
-          // Remove all stylesheets and style tags that contain oklch
-          const stylesheets = clonedDoc.querySelectorAll('style, link[rel="stylesheet"]');
-          stylesheets.forEach((s) => s.remove());
-
-          // Apply clean inline fallback colors to receipt elements
-          const receiptCard = clonedDoc.getElementById('receipt-card');
-          if (receiptCard) {
-            receiptCard.style.backgroundColor = '#ffffff';
-            receiptCard.style.color = '#1e293b';
-            receiptCard.style.fontFamily = 'sans-serif';
-          }
-        },
       });
       canvas.toBlob(async (blob) => {
         if (!blob) return;
@@ -57,6 +60,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, settings, onC
     } catch (err) {
       console.error('Failed to share receipt image', err);
     } finally {
+      window.getComputedStyle = originalGetComputedStyle;
       setDownloading(false);
     }
   };
