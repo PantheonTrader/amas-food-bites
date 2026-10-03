@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { CheckCircle2, MessageCircle, Copy, Check, Clock, ChevronRight, X } from 'lucide-react';
+import { CheckCircle2, MessageCircle, Copy, Check, Clock, ChevronRight, X, ShieldCheck } from 'lucide-react';
 import { Order, AppSettings } from '../types';
+import { ReceiptModal } from './ReceiptModal';
 
 interface OrderConfirmationModalProps {
   order: Order | null;
@@ -16,6 +17,7 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
   onClose,
 }) => {
   const [copied, setCopied] = useState<boolean>(false);
+  const [showReceipt, setShowReceipt] = useState<boolean>(false);
 
   if (!order) return null;
 
@@ -171,6 +173,14 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
             </a>
 
             <button
+              onClick={() => setShowReceipt(true)}
+              className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-black text-white py-3 px-4 rounded-xl font-bold shadow-md cursor-pointer transition-colors"
+            >
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span>View Official Picture Receipt (PNG)</span>
+            </button>
+
+            <button
               onClick={handleCopyMessage}
               className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 px-4 rounded-xl font-semibold transition-colors cursor-pointer"
             >
@@ -200,6 +210,10 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
           </button>
         </div>
       </div>
+
+      {showReceipt && (
+        <ReceiptModal order={order} settings={settings} onClose={() => setShowReceipt(false)} />
+      )}
     </div>
   );
 };

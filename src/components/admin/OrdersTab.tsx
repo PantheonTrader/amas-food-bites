@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Send, CheckCircle2, AlertCircle, RefreshCw, Filter, Copy, MessageSquare, ChevronDown } from 'lucide-react';
+import { Clock, Send, CheckCircle2, AlertCircle, RefreshCw, Filter, Copy, MessageSquare, ChevronDown, FileText } from 'lucide-react';
 import { Order, AppSettings } from '../../types';
 import { fetchOrders, updateOrderStatus, collateOrdersForWhatsApp } from '../../api';
+import { ReceiptModal } from '../ReceiptModal';
 
 interface OrdersTabProps {
   adminPin: string;
@@ -13,6 +14,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ adminPin, settings }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [selectedReceiptOrder, setSelectedReceiptOrder] = useState<Order | null>(null);
   const [collatedModal, setCollatedModal] = useState<{
     text: string;
     whatsappUrl: string;
@@ -271,7 +273,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ adminPin, settings }) => {
               </div>
 
               {/* Card Footer: Total & Actions */}
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                 <div>
                   <span className="text-[11px] text-slate-400 block">Total Value</span>
                   <span className="font-black text-slate-900 text-base font-mono">
@@ -279,21 +281,39 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ adminPin, settings }) => {
                   </span>
                 </div>
 
-                <a
-                  href={`https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                    `Hello ${order.customerName}, this is ${settings.restaurantName} regarding your order #${order.orderNumber}. We have received your order and its status is: ${order.status}.`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-lg border border-emerald-200 font-semibold transition-colors cursor-pointer"
-                >
-                  <MessageSquare className="w-3.5 h-3.5" />
-                  <span>Message Customer</span>
-                </a>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setSelectedReceiptOrder(order)}
+                    className="flex items-center gap-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 font-semibold transition-colors cursor-pointer"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-slate-600" />
+                    <span>View Receipt</span>
+                  </button>
+
+                  <a
+                    href={`https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                      `Hello ${order.customerName}, this is ${settings.restaurantName} regarding your order #${order.orderNumber}. We have received your order and its status is: ${order.status}.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-lg border border-emerald-200 font-semibold transition-colors cursor-pointer"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>Message</span>
+                  </a>
+                </div>
               </div>
             </div>
           ))}
         </div>
+      )}
+
+      {selectedReceiptOrder && (
+        <ReceiptModal
+          order={selectedReceiptOrder}
+          settings={settings}
+          onClose={() => setSelectedReceiptOrder(null)}
+        />
       )}
 
       {/* Collation Modal */}
