@@ -21,6 +21,19 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, settings, onC
         scale: 2,
         backgroundColor: '#ffffff',
         logging: false,
+        useCORS: true,
+        onclone: (clonedDoc) => {
+          const allEls = clonedDoc.querySelectorAll('*');
+          allEls.forEach((el) => {
+            const htmlEl = el as HTMLElement;
+            if (htmlEl && htmlEl.style) {
+              const bg = window.getComputedStyle(htmlEl).backgroundColor;
+              if (bg && bg.includes('oklch')) htmlEl.style.backgroundColor = '#ffffff';
+              const col = window.getComputedStyle(htmlEl).color;
+              if (col && col.includes('oklch')) htmlEl.style.color = '#1e293b';
+            }
+          });
+        },
       });
       canvas.toBlob(async (blob) => {
         if (!blob) return;
