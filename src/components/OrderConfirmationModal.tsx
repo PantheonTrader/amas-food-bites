@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { CheckCircle2, MessageCircle, Copy, Check, Clock, ChevronRight, X } from 'lucide-react';
+import { CheckCircle2, MessageCircle, Copy, Check, Clock, ChevronRight, X, ShieldCheck } from 'lucide-react';
 import { Order, AppSettings } from '../types';
+import { ReceiptModal } from './ReceiptModal';
 
 interface OrderConfirmationModalProps {
   order: Order | null;
@@ -16,6 +17,7 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
   onClose,
 }) => {
   const [copied, setCopied] = useState<boolean>(false);
+  const [showReceipt, setShowReceipt] = useState<boolean>(false);
 
   if (!order) return null;
 
@@ -160,11 +162,19 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
 
           {/* WhatsApp Direct Message Action */}
           <div className="space-y-3 pt-2">
+            <button
+              onClick={() => setShowReceipt(true)}
+              className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-black text-white py-3.5 px-4 rounded-xl font-bold shadow-md cursor-pointer transition-colors text-sm"
+            >
+              <ShieldCheck className="w-5 h-5 text-emerald-400" />
+              <span>View & Share Picture Receipt (PNG)</span>
+            </button>
+
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 bg-[#00875A] hover:bg-[#00704A] text-white py-4 px-4 rounded-xl font-bold shadow-md cursor-pointer transition-colors text-sm"
+              className="w-full flex items-center justify-center gap-2 bg-[#00875A] hover:bg-[#00704A] text-white py-3.5 px-4 rounded-xl font-bold shadow-md cursor-pointer transition-colors text-sm"
             >
               <MessageCircle className="w-5 h-5" />
               <span>Send Order to WhatsApp Now</span>
@@ -186,9 +196,6 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
                 </>
               )}
             </button>
-            <p className="text-[11px] text-slate-500 text-center px-2">
-              ✅ <strong className="text-slate-700">Instant WhatsApp Link:</strong> Opens WhatsApp directly with your order code and total amount pre-filled and ready to send.
-            </p>
           </div>
         </div>
 
@@ -203,6 +210,10 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
           </button>
         </div>
       </div>
+
+      {showReceipt && (
+        <ReceiptModal order={order} settings={settings} onClose={() => setShowReceipt(false)} />
+      )}
     </div>
   );
 };

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Send, CheckCircle2, AlertCircle, RefreshCw, Filter, Copy, MessageSquare, ChevronDown } from 'lucide-react';
+import { Clock, Send, CheckCircle2, AlertCircle, RefreshCw, Filter, Copy, MessageSquare, ChevronDown, FileText } from 'lucide-react';
 import { Order, AppSettings } from '../../types';
 import { fetchOrders, updateOrderStatus, collateOrdersForWhatsApp } from '../../api';
+import { ReceiptModal } from '../ReceiptModal';
 
 interface OrdersTabProps {
   adminPin: string;
@@ -13,6 +14,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ adminPin, settings }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [selectedReceiptOrder, setSelectedReceiptOrder] = useState<Order | null>(null);
   const [collatedModal, setCollatedModal] = useState<{
     text: string;
     whatsappUrl: string;
@@ -280,6 +282,14 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ adminPin, settings }) => {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setSelectedReceiptOrder(order)}
+                    className="flex items-center gap-1.5 text-xs bg-slate-900 hover:bg-black text-white px-3.5 py-2 rounded-xl font-bold transition-colors cursor-pointer shadow-xs"
+                  >
+                    <FileText className="w-4 h-4 text-emerald-400" />
+                    <span>View Picture Receipt</span>
+                  </button>
+
                   {(() => {
                     const breakdown = order.whatsappMessage && !order.whatsappMessage.includes('undefined')
                       ? order.whatsappMessage
@@ -325,6 +335,14 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ adminPin, settings }) => {
             </div>
           ))}
         </div>
+      )}
+
+      {selectedReceiptOrder && (
+        <ReceiptModal
+          order={selectedReceiptOrder}
+          settings={settings}
+          onClose={() => setSelectedReceiptOrder(null)}
+        />
       )}
 
       {/* Collation Modal */}

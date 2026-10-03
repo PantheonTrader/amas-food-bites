@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
-import { Download, CheckCircle2, X, UtensilsCrossed, ShieldCheck, Printer, MessageCircle } from 'lucide-react';
+import { Download, CheckCircle2, X, UtensilsCrossed, ShieldCheck } from 'lucide-react';
 import { Order, AppSettings } from '../types';
-import html2canvas from 'html2canvas';
+import * as htmlToImage from 'html-to-image';
 
 interface ReceiptModalProps {
   order: Order;
@@ -13,56 +13,28 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, settings, onC
   const receiptRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState<boolean>(false);
 
-  const handleShareImage = async () => {
+  const handleShareImage = () => {
     if (!receiptRef.current) return;
     setDownloading(true);
 
-    const originalGetComputedStyle = window.getComputedStyle;
-    window.getComputedStyle = function (elt: Element, pseudoElt?: string | null) {
-      const style = originalGetComputedStyle.call(window, elt, pseudoElt);
-      return new Proxy(style, {
-        get(target, prop, receiver) {
-          const val = Reflect.get(target, prop, receiver);
-          if (typeof val === 'string' && val.includes('oklch')) {
-            if (String(prop).toLowerCase().includes('background')) return '#ffffff';
-            return '#1e293b';
-          }
-          return val;
-        },
+    htmlToImage.toPng(receiptRef.current, { quality: 0.95, bgcolor: '#ffffff' })
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = `receipt-${order.orderNumber || 'order'}.png`;
+        link.href = dataUrl;
+        link.click();
+        
+        alert("🔒 Picture Receipt Downloaded! Please attach this image when WhatsApp opens to secure your order against fraud.");
+        
+        const whatsappUrl = `https://wa.me/${settings.whatsappNumber}?text=${encodeURIComponent(order.whatsappMessage || `Official verified receipt for order #${order.orderNumber} at ${settings.restaurantName}`)}`;
+        window.open(whatsappUrl, '_blank');
+      })
+      .catch((error) => {
+        console.error('Error generating image receipt:', error);
+      })
+      .finally(() => {
+        setDownloading(false);
       });
-    };
-
-    try {
-      const canvas = await html2canvas(receiptRef.current, {
-        scale: 2,
-        backgroundColor: '#ffffff',
-        logging: false,
-        useCORS: true,
-      });
-      canvas.toBlob(async (blob) => {
-        if (!blob) return;
-        const file = new File([blob], `Receipt-${order.orderNumber}.png`, { type: 'image/png' });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            files: [file],
-            title: `Order Receipt #${order.orderNumber}`,
-            text: order.whatsappMessage || `Official verified receipt for order #${order.orderNumber} at ${settings.restaurantName}`,
-          });
-        } else {
-          // Fallback to download
-          const image = canvas.toDataURL('image/png');
-          const a = document.createElement('a');
-          a.href = image;
-          a.download = `Receipt-${order.orderNumber}.png`;
-          a.click();
-        }
-      }, 'image/png');
-    } catch (err) {
-      console.error('Failed to share receipt image', err);
-    } finally {
-      window.getComputedStyle = originalGetComputedStyle;
-      setDownloading(false);
-    }
   };
 
   return (
@@ -155,84 +127,75 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, settings, onC
               </div>
 
               {order.items.map((item, idx) => {
-                const itemTotal = item.price * item.quantity;
+                const itemTotal = (item.price + (item.addonPrice || 0)) * item.quantity;
                 return (
                   <div key={idx} className="flex justify-between items-start gap-2">
                     <div>
-                      <span className="font-bold text-slate-900">{item.quantity}x {item.name}</span>
-                      {item.note && <div className="text-[10px] text-slate-500">Note: {item.note}</div>}
+                      <div className="font-bold text-slate-900">
+                        {item.quantity}x {item.name}
+                      </div>
+                      {item.addonName && (
+                        <div className="text-[11px] text-slate-500">+ {item.addonName}</div>
+                      )}
+                      {item.note && (
+                        <div className="text-[10px] text-slate-400 italic">Note: {item.note}</div>
+                      )}
                     </div>
-                    <span className="font-mono font-bold text-slate-900 shrink-0">
+                    <div className="font-mono font-bold text-slate-900 shrink-0">
                       {settings.currencySymbol}{itemTotal.toLocaleString()}
-                    </span>
+                    </div>
                   </div>
                 );
               })}
             </div>
 
             {/* Totals */}
-            <div className="space-y-1.5 text-xs pt-1">
-              <div className="flex justify-between text-slate-600">
+            <div className="space-y-1 text-xs pt-1 text-slate-600">
+              <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span className="font-mono font-bold text-slate-900">
+                <span className="font-mono font-medium text-slate-900">
                   {settings.currencySymbol}{order.subtotal.toLocaleString()}
                 </span>
               </div>
               {order.deliveryType === 'delivery' && (
-                <div className="flex justify-between text-slate-600">
+                <div className="flex justify-between">
                   <span>Delivery Fee</span>
-                  <span className="font-mono font-bold text-slate-900">
+                  <span className="font-mono font-medium text-slate-900">
                     {settings.currencySymbol}{order.deliveryFee.toLocaleString()}
                   </span>
                 </div>
               )}
               <div className="flex justify-between text-sm font-black text-slate-900 pt-2 border-t border-slate-200">
-                <span>Grand Total</span>
-                <span className="font-mono text-emerald-700">
+                <span>Total Amount</span>
+                <span className="font-mono text-[#9D1D11]">
                   {settings.currencySymbol}{order.total.toLocaleString()}
                 </span>
               </div>
             </div>
 
-            {/* Security Barcode / Footer */}
-            <div className="pt-4 border-t border-dashed border-slate-300 text-center space-y-2">
-              <div className="font-mono text-[9px] tracking-widest text-slate-400 bg-slate-100 py-1 rounded">
-                ||| | |||| || | |||| |||| ||
-              </div>
-              <p className="text-[10px] text-emerald-700 font-bold flex items-center justify-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>UNALTERABLE DIGITAL RECEIPT</span>
-              </p>
-              <p className="text-[9px] text-slate-400">
-                Thank you for your order! Please present this receipt or share it via WhatsApp.
-              </p>
+            {/* Footer Seal */}
+            <div className="pt-3 text-center border-t border-dashed border-slate-300 text-[10px] text-slate-400">
+              Verified Order • {settings.restaurantName}
             </div>
-
           </div>
         </div>
 
-        {/* Modal Footer Actions */}
-        <div className="p-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center gap-2">
-          <button
-            onClick={onClose}
-            className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 px-4 rounded-xl font-bold text-xs transition-colors cursor-pointer"
-          >
-            Close
-          </button>
-          
+        {/* Action Footer */}
+        <div className="p-5 bg-white border-t border-slate-200 flex flex-col gap-2.5">
           <button
             onClick={handleShareImage}
             disabled={downloading}
-            className="w-full sm:flex-1 bg-[#00875A] hover:bg-[#00704A] text-white py-3 px-4 rounded-xl font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+            className="w-full flex items-center justify-center gap-2 bg-[#00875A] hover:bg-[#00704A] text-white py-3.5 px-4 rounded-xl font-bold shadow-md transition-colors cursor-pointer text-sm disabled:opacity-50"
           >
-            {downloading ? (
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <>
-                <MessageCircle className="w-4 h-4" />
-                <span>Share Picture Receipt to WhatsApp</span>
-              </>
-            )}
+            <Download className="w-5 h-5" />
+            <span>{downloading ? 'Generating Receipt Image...' : 'View & Share Picture Receipt (PNG)'}</span>
+          </button>
+          
+          <button
+            onClick={onClose}
+            className="w-full py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+          >
+            Close Receipt Preview
           </button>
         </div>
 
