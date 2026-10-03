@@ -68,6 +68,9 @@ interface Settings {
   isStoreClosed: boolean;
   deliveryFee: number;
   currencySymbol: string;
+  bankName?: string;
+  bankAccountNumber?: string;
+  bankAccountName?: string;
 }
 
 interface Account {
@@ -155,7 +158,10 @@ function loadDb(): Database {
       adminPin: "1234",
       isStoreClosed: false,
       deliveryFee: 1000,
-      currencySymbol: "₦"
+      currencySymbol: "₦",
+      bankName: "Moniepoint MFB",
+      bankAccountNumber: "8138788589",
+      bankAccountName: "Ama's Food & Bites"
     },
     categories: [],
     items: [],
@@ -223,50 +229,10 @@ function checkAdminPin(req: Request): boolean {
 // Format WhatsApp message helper
 function buildWhatsAppMessage(order: Order, settings: Settings): string {
   const lines: string[] = [];
-  lines.push(`🍔 *NEW ORDER — ${settings.restaurantName.toUpperCase()}* 🍔`);
-  lines.push(`*Order ID:* ${order.orderNumber}`);
-  lines.push(`*Date:* ${new Date(order.createdAt).toLocaleString('en-GB')}`);
-  lines.push(`---------------------------------`);
-  lines.push(`*CUSTOMER DETAILS:*`);
-  lines.push(`👤 *Name:* ${order.customerName}`);
-  lines.push(`📞 *Phone:* ${order.customerPhone}`);
-  lines.push(`📍 *Type:* ${order.deliveryType === 'delivery' ? 'Home Delivery' : 'Pickup at Restaurant'}`);
-  if (order.deliveryType === 'delivery' && order.deliveryAddress) {
-    lines.push(`🏠 *Address:* ${order.deliveryAddress}`);
-  }
-  if (order.notes && order.notes.trim()) {
-    lines.push(`📝 *Order Note:* ${order.notes.trim()}`);
-  }
-  lines.push(`---------------------------------`);
-  lines.push(`*ITEMS ORDERED:*`);
-
-  order.items.forEach((item, index) => {
-    let itemLine = `${index + 1}. *${item.quantity}x ${item.name}*`;
-    if (item.addonName) {
-      itemLine += ` + _${item.addonName}_`;
-    }
-    const itemTotal = (item.price + (item.addonPrice || 0)) * item.quantity;
-    itemLine += ` — ${settings.currencySymbol}${itemTotal.toLocaleString()}`;
-    lines.push(itemLine);
-
-    if (item.note && item.note.trim()) {
-      lines.push(`   └ 📌 _Note: ${item.note.trim()}_`);
-    }
-  });
-
-  lines.push(`---------------------------------`);
-  lines.push(`*Subtotal:* ${settings.currencySymbol}${order.subtotal.toLocaleString()}`);
-  if (order.deliveryType === 'delivery') {
-    lines.push(`*Delivery Fee:* ${settings.currencySymbol}${order.deliveryFee.toLocaleString()}`);
-  }
-  lines.push(`*GRAND TOTAL:* *${settings.currencySymbol}${order.total.toLocaleString()}*`);
-  lines.push(`---------------------------------`);
-  const secureHash = 'SEC-' + Math.random().toString(36).substring(2, 8).toUpperCase() + '-' + order.orderNumber;
-  lines.push(`🔒 *Secure Verification Code:* ${secureHash}`);
-  lines.push(`*(Cross-check with Admin Dashboard to confirm authenticity)*`);
-  lines.push(`---------------------------------`);
-  lines.push(`Please confirm this order and provide estimated preparation time. Thank you!`);
-
+  lines.push(`NEW ORDER #${order.orderNumber} (${order.deliveryType.toUpperCase()})`);
+  lines.push(`Customer: ${order.customerName}`);
+  lines.push(`(${order.customerPhone})`);
+  lines.push(`Total: ${settings.currencySymbol}${order.total.toLocaleString()}`);
   return lines.join('\n');
 }
 
@@ -433,7 +399,7 @@ app.put('/api/settings', (req: Request, res: Response) => {
     return res.status(403).json({ error: 'Unauthorized: admin access required to modify settings' });
   }
 
-  const { restaurantName, tagline, whatsappNumber, isStoreClosed, deliveryFee, newPin, currentPin } = req.body;
+  const { restaurantName, tagline, whatsappNumber, isStoreClosed, deliveryFee, bankName, bankAccountNumber, bankAccountName, newPin, currentPin } = req.body;
 
   // Seamless WhatsApp Number normalization and validation
   if (whatsappNumber !== undefined) {
@@ -460,6 +426,16 @@ app.put('/api/settings', (req: Request, res: Response) => {
 
   if (deliveryFee !== undefined && !isNaN(Number(deliveryFee))) {
     db.settings.deliveryFee = Math.max(0, Number(deliveryFee));
+  }
+
+  if (bankName !== undefined) {
+    db.settings.bankName = String(bankName).trim();
+  }
+  if (bankAccountNumber !== undefined) {
+    db.settings.bankAccountNumber = String(bankAccountNumber).trim();
+  }
+  if (bankAccountName !== undefined) {
+    db.settings.bankAccountName = String(bankAccountName).trim();
   }
 
   // Handle PIN change if requested

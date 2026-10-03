@@ -291,7 +291,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ adminPin, settings }) => {
                   </button>
 
                   {(() => {
-                    const breakdown = order.whatsappMessage && !order.whatsappMessage.includes('undefined')
+                    let breakdown = order.whatsappMessage && !order.whatsappMessage.includes('undefined')
                       ? order.whatsappMessage
                       : [
                           `🍽️ *${settings.restaurantName.toUpperCase()} — ORDER RECEIPT*`,
@@ -313,6 +313,14 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ adminPin, settings }) => {
                           `---------------------------------`,
                           `Thank you for ordering with ${settings.restaurantName}! 🙏`
                         ].filter(Boolean).join('\n');
+
+                    if (settings.bankAccountNumber) {
+                      breakdown += `\n\n*PAYMENT ACCOUNT DETAILS:*` +
+                        (settings.bankName ? `\nBank: ${settings.bankName}` : '') +
+                        `\nAccount No: *${settings.bankAccountNumber}*` +
+                        (settings.bankAccountName ? `\nAccount Name: ${settings.bankAccountName}` : '') +
+                        `\n_(Please transfer exact total and share receipt)_`;
+                    }
 
                     const waUrl = `https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
                       `Hello ${order.customerName}, this is ${settings.restaurantName}! Here is the breakdown of your order:\n\n${breakdown}`

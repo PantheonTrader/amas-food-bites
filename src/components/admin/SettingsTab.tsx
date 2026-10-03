@@ -41,6 +41,9 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
   const [whatsappNumber, setWhatsappNumber] = useState<string>(settings.whatsappNumber);
   const [deliveryFee, setDeliveryFee] = useState<string>(String(settings.deliveryFee || 1000));
   const [isStoreClosed, setIsStoreClosed] = useState<boolean>(settings.isStoreClosed);
+  const [bankName, setBankName] = useState<string>(settings.bankName || 'Moniepoint MFB');
+  const [bankAccountNumber, setBankAccountNumber] = useState<string>(settings.bankAccountNumber || '8138788589');
+  const [bankAccountName, setBankAccountName] = useState<string>(settings.bankAccountName || settings.restaurantName);
 
   // Accounts state (Admin & Staff)
   const [accounts, setAccounts] = useState<UserAccount[]>([]);
@@ -127,6 +130,9 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
           whatsappNumber: normalized,
           deliveryFee: feeNum,
           isStoreClosed,
+          bankName: bankName.trim(),
+          bankAccountNumber: bankAccountNumber.trim(),
+          bankAccountName: bankAccountName.trim(),
         },
         adminPin
       );
@@ -382,6 +388,51 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               onChange={(e) => setDeliveryFee(e.target.value)}
               className="w-full text-xs sm:text-sm font-mono px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#9D1D11]"
             />
+          </div>
+        </div>
+
+        {/* Fixed Bank Account Details for Customer Payments */}
+        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+          <h4 className="font-extrabold text-sm text-slate-900 font-display flex items-center gap-2">
+            <span>💳 Fixed Bank Account Details (for Customer Payments)</span>
+          </h4>
+          <p className="text-xs text-slate-500">
+            These bank details are automatically appended to the bottom of WhatsApp messages when staff send order breakdowns to customers.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Bank Name</label>
+              <input
+                type="text"
+                value={bankName}
+                onChange={(e) => setBankName(e.target.value)}
+                placeholder="e.g. Moniepoint / OPay"
+                className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9D1D11]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Account Number</label>
+              <input
+                type="text"
+                value={bankAccountNumber}
+                onChange={(e) => setBankAccountNumber(e.target.value)}
+                placeholder="e.g. 8138788589"
+                className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9D1D11] font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Account Name</label>
+              <input
+                type="text"
+                value={bankAccountName}
+                onChange={(e) => setBankAccountName(e.target.value)}
+                placeholder="e.g. Ama's Food & Bites"
+                className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9D1D11]"
+              />
+            </div>
           </div>
         </div>
 

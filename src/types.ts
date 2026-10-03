@@ -65,6 +65,9 @@ export interface AppSettings {
   isStoreClosed: boolean;
   deliveryFee: number;
   currencySymbol: string;
+  bankName?: string;
+  bankAccountNumber?: string;
+  bankAccountName?: string;
 }
 
 export type UserRole = 'admin' | 'staff';
