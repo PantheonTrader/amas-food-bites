@@ -1,0 +1,6 @@
+{
+  "name": "Ama's Food & Bites — Food Ordering & WhatsApp Collation",
+  "description": "Mobile-first restaurant ordering system with real-time inventory tracking, modifier groups, and automated WhatsApp order collation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

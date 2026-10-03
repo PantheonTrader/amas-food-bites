@@ -1,0 +1,366 @@
+{
+  "settings": {
+    "restaurantName": "Ama's Food & Bites",
+    "tagline": "From sizzling Jollof and Basmati specials to Pizza, Shawarma, Burgers and more — your favourite meals are now just a tap away.",
+    "whatsappNumber": "2348138788589",
+    "adminPin": "1234",
+    "isStoreClosed": false,
+    "deliveryFee": 1000,
+    "currencySymbol": "₦"
+  },
+  "categories": [
+    {
+      "id": "cat_rice",
+      "name": "Rice & Specials",
+      "order": 1
+    },
+    {
+      "id": "cat_burgers",
+      "name": "Burgers & Shawarma",
+      "order": 2
+    },
+    {
+      "id": "cat_pizza",
+      "name": "Pizza",
+      "order": 3
+    },
+    {
+      "id": "cat_swallow",
+      "name": "Swallow & Soups",
+      "order": 4
+    },
+    {
+      "id": "cat_pepper_soup",
+      "name": "Pepper Soup & Grills",
+      "order": 5
+    },
+    {
+      "id": "cat_proteins",
+      "name": "Proteins & Add-ons",
+      "order": 6
+    },
+    {
+      "id": "cat_pastries",
+      "name": "Pastries & Sides",
+      "order": 7
+    },
+    {
+      "id": "cat_drinks",
+      "name": "Chilled Drinks",
+      "order": 8
+    }
+  ],
+  "items": [
+    {
+      "id": "item_jollof",
+      "name": "Sizzling Smoky Jollof Rice",
+      "description": "Firewood-smoked party jollof cooked with plum tomatoes, sweet bell peppers, and fragrant bay leaf spices.",
+      "price": 2800,
+      "category": "Rice & Specials",
+      "stockQuantity": 22,
+      "isSoldOut": false,
+      "allowAddonCategory": "Proteins & Add-ons",
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_basmati_fried",
+      "name": "Chef's Special Basmati Fried Rice",
+      "description": "Fragrant long-grain basmati rice tossed with sweet corn, crunchy carrots, green peas, and diced liver.",
+      "price": 3500,
+      "category": "Rice & Specials",
+      "stockQuantity": 17,
+      "isSoldOut": false,
+      "allowAddonCategory": "Proteins & Add-ons",
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_native_ofada",
+      "name": "Cozy Native Ofada Rice Special",
+      "description": "Traditional aromatic unpolished rice accompanied by rich spicy Ayamase stew, diced assorted meats and boiled egg.",
+      "price": 3800,
+      "category": "Rice & Specials",
+      "stockQuantity": 12,
+      "isSoldOut": false,
+      "allowAddonCategory": "Proteins & Add-ons",
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_double_burger",
+      "name": "Double Cozy Beef Burger",
+      "description": "Two seasoned grilled beef patties, melted cheddar, sweet caramelized onions, lettuce, and secret cozy house sauce.",
+      "price": 4500,
+      "category": "Burgers & Shawarma",
+      "stockQuantity": 15,
+      "isSoldOut": false,
+      "allowAddonCategory": "Pastries & Sides",
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_crispy_burger",
+      "name": "Crispy Golden Chicken Burger",
+      "description": "Crunchy buttermilk-marinated fried chicken thigh, spicy coleslaw, garlic aioli, and brioche bun.",
+      "price": 4200,
+      "category": "Burgers & Shawarma",
+      "stockQuantity": 14,
+      "isSoldOut": false,
+      "allowAddonCategory": "Pastries & Sides",
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_jumbo_shawarma",
+      "name": "Jumbo Chicken Shawarma (Double Sausage)",
+      "description": "Spiced shredded chicken, dual beef frankfurters, crisp cabbage, creamy garlic drizzle wrapped in toasted pita.",
+      "price": 3500,
+      "category": "Burgers & Shawarma",
+      "stockQuantity": 22,
+      "isSoldOut": false,
+      "allowAddonCategory": null,
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_pepperoni_pizza",
+      "name": "Cozy Pepperoni Feast Pizza (Medium)",
+      "description": "Handcrafted stone-baked crust, rich herb marinara, loaded with savory sliced pepperoni and bubbling mozzarella.",
+      "price": 6500,
+      "category": "Pizza",
+      "stockQuantity": 10,
+      "isSoldOut": false,
+      "allowAddonCategory": "Chilled Drinks",
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_bbq_pizza",
+      "name": "BBQ Chicken & Sweetcorn Pizza (Medium)",
+      "description": "Tender barbecue chicken morsels, sweet golden corn, red bell peppers, and stretchy premium mozzarella.",
+      "price": 6800,
+      "category": "Pizza",
+      "stockQuantity": 8,
+      "isSoldOut": false,
+      "allowAddonCategory": "Chilled Drinks",
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_pounded_yam_egusi",
+      "name": "Pounded Yam & Rich Egusi Soup",
+      "description": "Steaming smooth pounded yam served with thick ground melon seed egusi, bitterleaf, and dry fish stock.",
+      "price": 3600,
+      "category": "Swallow & Soups",
+      "stockQuantity": 16,
+      "isSoldOut": false,
+      "allowAddonCategory": "Proteins & Add-ons",
+      "isAddonRequired": true,
+      "imageUrl": "https://images.unsplash.com/photo-1547496502-affa22d38842?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_eba_okro",
+      "name": "Yellow Eba & Seafood Okro Soup",
+      "description": "Soft bendable yellow garri eba served with fresh diced crunchy okro, fresh tiger prawns, and smoked fish broth.",
+      "price": 3400,
+      "category": "Swallow & Soups",
+      "stockQuantity": 14,
+      "isSoldOut": false,
+      "allowAddonCategory": "Proteins & Add-ons",
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_catfish_pepper_soup",
+      "name": "Sizzling Catfish Pepper Soup (Point & Kill)",
+      "description": "Fresh tender catfish cutlets slow-cooked in aromatic native Uda, Uziza, scent leaves, and spicy broth.",
+      "price": 4800,
+      "category": "Pepper Soup & Grills",
+      "stockQuantity": 9,
+      "isSoldOut": false,
+      "allowAddonCategory": null,
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_goat_meat_pepper_soup",
+      "name": "Spicy Goat Meat Pepper Soup",
+      "description": "Succulent bite-sized goat meat simmered in deeply spiced habanero and traditional botanical broth.",
+      "price": 4200,
+      "category": "Pepper Soup & Grills",
+      "stockQuantity": 12,
+      "isSoldOut": false,
+      "allowAddonCategory": null,
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_crispy_chicken",
+      "name": "Fried Crispy Chicken (Quarter)",
+      "description": "Well seasoned crispy golden fried chicken with savory seasoning. Perfect as an add-on or on its own.",
+      "price": 1500,
+      "category": "Proteins & Add-ons",
+      "stockQuantity": 32,
+      "isSoldOut": false,
+      "allowAddonCategory": null,
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_stewed_beef",
+      "name": "Tender Stewed Beef (2 pcs)",
+      "description": "Slow-cooked prime beef chunks drenched in rich pepper sauce.",
+      "price": 1200,
+      "category": "Proteins & Add-ons",
+      "stockQuantity": 40,
+      "isSoldOut": false,
+      "allowAddonCategory": null,
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1534939561126-855b8675edd7?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_croaker_fish",
+      "name": "Jumbo Fried Croaker Fish",
+      "description": "Crispy whole croaker fish cutlet seasoned with red pepper marinade.",
+      "price": 2200,
+      "category": "Proteins & Add-ons",
+      "stockQuantity": 15,
+      "isSoldOut": false,
+      "allowAddonCategory": null,
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_fried_plantain",
+      "name": "Golden Fried Plantain (Dodo)",
+      "description": "Sweet, caramelised ripe plantain slices fried to golden perfection.",
+      "price": 800,
+      "category": "Proteins & Add-ons",
+      "stockQuantity": 40,
+      "isSoldOut": false,
+      "allowAddonCategory": null,
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_french_fries",
+      "name": "Crispy French Fries",
+      "description": "Hot and crispy salted potato fries with dip.",
+      "price": 1500,
+      "category": "Pastries & Sides",
+      "stockQuantity": 20,
+      "isSoldOut": false,
+      "allowAddonCategory": null,
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_golden_meatpie",
+      "name": "Cozy Golden Meat Pie",
+      "description": "Flaky buttery crust filled with seasoned minced beef, potatoes, and carrots.",
+      "price": 1000,
+      "category": "Pastries & Sides",
+      "stockQuantity": 25,
+      "isSoldOut": true,
+      "allowAddonCategory": null,
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_chapman",
+      "name": "Signature Cozy Chapman",
+      "description": "Classic Nigerian sparkling Chapman infused with citrus, cucumber slices, and Angostura aromatics.",
+      "price": 1800,
+      "category": "Chilled Drinks",
+      "stockQuantity": 25,
+      "isSoldOut": false,
+      "allowAddonCategory": null,
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "item_zobo",
+      "name": "Fresh Chilled Pineapple Zobo",
+      "description": "Natural chilled hibiscus drink infused with fresh pressed pineapple and spicy ginger extract.",
+      "price": 1200,
+      "category": "Chilled Drinks",
+      "stockQuantity": 30,
+      "isSoldOut": false,
+      "allowAddonCategory": null,
+      "isAddonRequired": false,
+      "imageUrl": "https://images.unsplash.com/photo-1556881286-fc6915169721?auto=format&fit=crop&w=600&q=80"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ord_1790499111523_5686",
+      "orderNumber": "RX-5686",
+      "customerName": "Test Customer",
+      "customerPhone": "2348123456789",
+      "deliveryType": "delivery",
+      "deliveryAddress": "12 Test Crescent, Victoria Island",
+      "notes": "No onions please",
+      "items": [
+        {
+          "itemId": "item_jollof",
+          "name": "Sizzling Smoky Jollof Rice",
+          "price": 2800,
+          "quantity": 2,
+          "addonId": "item_crispy_chicken",
+          "addonName": "Fried Crispy Chicken (Quarter)",
+          "addonPrice": 1500,
+          "note": "Extra spicy"
+        }
+      ],
+      "subtotal": 8600,
+      "deliveryFee": 1000,
+      "total": 9600,
+      "status": "Pending",
+      "createdAt": "2026-09-27T08:51:51.523Z",
+      "whatsappMessage": "🍔 *NEW ORDER — R&X COZY BITE* 🍔\n*Order ID:* RX-5686\n*Date:* 27/09/2026, 08:51:51\n---------------------------------\n*CUSTOMER DETAILS:*\n👤 *Name:* Test Customer\n📞 *Phone:* 2348123456789\n📍 *Type:* Home Delivery\n🏠 *Address:* 12 Test Crescent, Victoria Island\n📝 *Order Note:* No onions please\n---------------------------------\n*ITEMS ORDERED:*\n1. *2x Sizzling Smoky Jollof Rice* + _Fried Crispy Chicken (Quarter)_ — ₦8,600\n   └ 📌 _Note: Extra spicy_\n---------------------------------\n*Subtotal:* ₦8,600\n*Delivery Fee:* ₦1,000\n*GRAND TOTAL:* *₦9,600*\n---------------------------------\nPlease confirm this order and provide estimated preparation time. Thank you!"
+    },
+    {
+      "id": "ord_1790500240423_9191",
+      "orderNumber": "RX-9191",
+      "customerName": "David Eluyode",
+      "customerPhone": "08138788589",
+      "deliveryType": "delivery",
+      "deliveryAddress": "Room of 8 behind odogwu bar apo wumbs",
+      "items": [
+        {
+          "itemId": "item_basmati_fried",
+          "name": "Chef's Special Basmati Fried Rice",
+          "price": 3500,
+          "quantity": 1,
+          "addonId": "item_crispy_chicken",
+          "addonName": "Fried Crispy Chicken (Quarter)",
+          "addonPrice": 1500,
+          "note": ""
+        }
+      ],
+      "subtotal": 5000,
+      "deliveryFee": 1000,
+      "total": 6000,
+      "status": "Pending",
+      "createdAt": "2026-09-27T09:10:40.423Z",
+      "whatsappMessage": "🍔 *NEW ORDER — R&X COZY BITE* 🍔\n*Order ID:* RX-9191\n*Date:* 27/09/2026, 09:10:40\n---------------------------------\n*CUSTOMER DETAILS:*\n👤 *Name:* David Eluyode\n📞 *Phone:* 08138788589\n📍 *Type:* Home Delivery\n🏠 *Address:* Room of 8 behind odogwu bar apo wumbs\n---------------------------------\n*ITEMS ORDERED:*\n1. *1x Chef's Special Basmati Fried Rice* + _Fried Crispy Chicken (Quarter)_ — ₦5,000\n---------------------------------\n*Subtotal:* ₦5,000\n*Delivery Fee:* ₦1,000\n*GRAND TOTAL:* *₦6,000*\n---------------------------------\nPlease confirm this order and provide estimated preparation time. Thank you!"
+    }
+  ],
+  "accounts": [
+    {
+      "id": "acc_admin",
+      "role": "admin",
+      "name": "General Manager / Owner",
+      "email": "admin@rxcozybite.com",
+      "password": "admin1234"
+    },
+    {
+      "id": "acc_staff",
+      "role": "staff",
+      "name": "Restaurant Staff / Kitchen",
+      "email": "staff@rxcozybite.com",
+      "password": "staff1234"
+    }
+  ]
+}
