@@ -35,6 +35,14 @@ export const OrderHistoryTab: React.FC<OrderHistoryTabProps> = ({ adminPin, sett
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const normalizePhone = (num: string): string => {
+    let clean = num.replace(/[\s\+\-\(\)]/g, '');
+    if (/^0\d{10}$/.test(clean)) {
+      clean = '234' + clean.slice(1);
+    }
+    return clean;
+  };
+
   // Filters
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -527,7 +535,7 @@ export const OrderHistoryTab: React.FC<OrderHistoryTabProps> = ({ adminPin, sett
                           {order.customerName}
                         </span>
                         <a
-                          href={`https://wa.me/${order.customerPhone.replace(/\D/g, '')}`}
+                          href={`https://wa.me/${normalizePhone(order.customerPhone)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-[11px] text-emerald-700 font-mono hover:underline inline-flex items-center gap-1"
@@ -678,7 +686,7 @@ export const OrderHistoryTab: React.FC<OrderHistoryTabProps> = ({ adminPin, sett
                 <div className="flex justify-between items-center">
                   <span className="text-slate-500">Phone:</span>
                   <a
-                    href={`https://wa.me/${selectedOrder.customerPhone.replace(/\D/g, '')}`}
+                    href={`https://wa.me/${normalizePhone(selectedOrder.customerPhone)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-bold text-emerald-700 hover:underline flex items-center gap-1 font-mono"
@@ -764,7 +772,7 @@ export const OrderHistoryTab: React.FC<OrderHistoryTabProps> = ({ adminPin, sett
             {/* Modal Actions */}
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
               <a
-                href={`https://wa.me/${selectedOrder.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                href={`https://wa.me/${normalizePhone(selectedOrder.customerPhone)}?text=${encodeURIComponent(
                   `Hello ${selectedOrder.customerName}, this is ${settings.restaurantName} regarding your past order #${selectedOrder.orderNumber}.`
                 )}`}
                 target="_blank"

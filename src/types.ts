@@ -62,6 +62,7 @@ export interface AppSettings {
   restaurantName: string;
   tagline: string;
   whatsappNumber: string;
+  kitchenWhatsappNumber?: string;
   isStoreClosed: boolean;
   deliveryFee: number;
   currencySymbol: string;
@@ -78,6 +79,7 @@ export interface UserAccount {
   name: string;
   role: UserRole;
   password?: string;
+  pin?: string;
 }
 
 export interface AuthSession {

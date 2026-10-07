@@ -64,6 +64,7 @@ interface Settings {
   restaurantName: string;
   tagline: string;
   whatsappNumber: string;
+  kitchenWhatsappNumber?: string;
   adminPin: string;
   isStoreClosed: boolean;
   deliveryFee: number;
@@ -155,6 +156,7 @@ function loadDb(): Database {
       restaurantName: "Ama's Food & Bites",
       tagline: "From sizzling Jollof and Basmati specials to Pizza, Shawarma, Burgers and more — your favourite meals are now just a tap away.",
       whatsappNumber: "2348138788589",
+      kitchenWhatsappNumber: "2348138788589",
       adminPin: "1234",
       isStoreClosed: false,
       deliveryFee: 1000,
@@ -229,10 +231,37 @@ function checkAdminPin(req: Request): boolean {
 // Format WhatsApp message helper
 function buildWhatsAppMessage(order: Order, settings: Settings): string {
   const lines: string[] = [];
-  lines.push(`NEW ORDER #${order.orderNumber} (${order.deliveryType.toUpperCase()})`);
-  lines.push(`Customer: ${order.customerName}`);
-  lines.push(`(${order.customerPhone})`);
-  lines.push(`Total: ${settings.currencySymbol}${order.total.toLocaleString()}`);
+  lines.push(`🍔 *NEW ORDER — ${settings.restaurantName.toUpperCase()}* 🍔`);
+  lines.push(`*Order ID:* ${order.orderNumber}`);
+  lines.push(`*Date:* ${new Date(order.createdAt).toLocaleString('en-GB')}`);
+  lines.push(`---------------------------------`);
+  lines.push(`*CUSTOMER DETAILS:*`);
+  lines.push(`👤 *Name:* ${order.customerName}`);
+  lines.push(`📞 *Phone:* ${order.customerPhone}`);
+  lines.push(`📍 *Type:* ${order.deliveryType === 'delivery' ? 'Home Delivery' : 'Pickup at Restaurant'}`);
+  if (order.deliveryType === 'delivery' && order.deliveryAddress) {
+    lines.push(`🏠 *Address:* ${order.deliveryAddress}`);
+  }
+  if (order.notes && order.notes.trim()) {
+    lines.push(`📝 *Order Note:* ${order.notes.trim()}`);
+  }
+  lines.push(`---------------------------------`);
+  lines.push(`*ITEMS ORDERED:*`);
+  order.items.forEach((item: any, index: number) => {
+    let itemLine = `${index + 1}. *${item.quantity}x ${item.name}*`;
+    if (item.addonName) itemLine += ` + ${item.addonName}`;
+    const itemTotal = (item.price + (item.addonPrice || 0)) * item.quantity;
+    itemLine += ` — ${settings.currencySymbol}${itemTotal.toLocaleString()}`;
+    lines.push(itemLine);
+  });
+  lines.push(`---------------------------------`);
+  lines.push(`*Subtotal:* ${settings.currencySymbol}${order.subtotal.toLocaleString()}`);
+  if (order.deliveryFee > 0) {
+    lines.push(`*Delivery Fee:* ${settings.currencySymbol}${order.deliveryFee.toLocaleString()}`);
+  }
+  lines.push(`*GRAND TOTAL:* *${settings.currencySymbol}${order.total.toLocaleString()}*`);
+  lines.push(`---------------------------------`);
+  lines.push(`Please confirm this order and provide estimated preparation time. Thank you!`);
   return lines.join('\n');
 }
 
@@ -266,6 +295,9 @@ app.get('/api/data', (_req: Request, res: Response) => {
     isStoreClosed: db.settings.isStoreClosed,
     deliveryFee: db.settings.deliveryFee,
     currencySymbol: db.settings.currencySymbol || '₦',
+    bankName: db.settings.bankName || '',
+    bankAccountNumber: db.settings.bankAccountNumber || '',
+    bankAccountName: db.settings.bankAccountName || '',
   };
 
   const sortedCategories = [...db.categories].sort((a, b) => a.order - b.order);
@@ -391,6 +423,9 @@ app.get('/api/settings', (_req: Request, res: Response) => {
     isStoreClosed: db.settings.isStoreClosed,
     deliveryFee: db.settings.deliveryFee,
     currencySymbol: db.settings.currencySymbol || '₦',
+    bankName: db.settings.bankName || '',
+    bankAccountNumber: db.settings.bankAccountNumber || '',
+    bankAccountName: db.settings.bankAccountName || '',
   });
 });
 
@@ -456,6 +491,10 @@ app.put('/api/settings', (req: Request, res: Response) => {
     whatsappNumber: db.settings.whatsappNumber,
     isStoreClosed: db.settings.isStoreClosed,
     deliveryFee: db.settings.deliveryFee,
+    currencySymbol: db.settings.currencySymbol || '₦',
+    bankName: db.settings.bankName || '',
+    bankAccountNumber: db.settings.bankAccountNumber || '',
+    bankAccountName: db.settings.bankAccountName || '',
   });
 
   res.json({ success: true, message: 'Settings updated successfully' });
@@ -863,9 +902,9 @@ app.post('/api/orders', (req: Request, res: Response) => {
     }
   });
 
-  // Generate unique readable order number e.g. RX-4982
+  // Generate unique readable order number e.g. 1844
   const randNum = Math.floor(1000 + Math.random() * 9000);
-  const orderNumber = `RX-${randNum}`;
+  const orderNumber = String(randNum);
 
   const newOrder: Order = {
     id: `ord_${Date.now()}_${randNum}`,
@@ -948,12 +987,12 @@ app.post('/api/orders/collate-whatsapp', (req: Request, res: Response) => {
   if (Array.isArray(orderIds) && orderIds.length > 0) {
     targetOrders = db.orders.filter((o) => orderIds.includes(o.id));
   } else {
-    // Collate all active non-delivered and non-cancelled orders by default
-    targetOrders = db.orders.filter((o) => o.status !== 'Delivered' && o.status !== 'Cancelled');
+    // Collate confirmed orders for kitchen
+    targetOrders = db.orders.filter((o) => o.status === 'Confirmed');
   }
 
   if (targetOrders.length === 0) {
-    return res.status(400).json({ error: 'No orders available to collate.' });
+    return res.status(400).json({ error: 'No confirmed orders available to send to the kitchen. (Please confirm order payment status first).' });
   }
 
   // Aggregate item breakdown
@@ -972,17 +1011,10 @@ app.post('/api/orders/collate-whatsapp', (req: Request, res: Response) => {
   });
 
   const lines: string[] = [];
-  lines.push(`🔥 *${db.settings.restaurantName.toUpperCase()} — BATCH ORDER COLLATION* 🔥`);
+  lines.push(`🍳 *${db.settings.restaurantName.toUpperCase()} — KITCHEN ORDER DISPATCH (CONFIRMED PAYMENTS)* 🍳`);
   lines.push(`📅 *Date:* ${new Date().toLocaleDateString('en-GB')} | ${new Date().toLocaleTimeString('en-GB')}`);
-  lines.push(`📦 *Total Active Orders:* ${targetOrders.length}`);
+  lines.push(`📦 *Total Confirmed Orders:* ${targetOrders.length}`);
   lines.push(`💰 *Total Order Value:* ${db.settings.currencySymbol}${totalRevenue.toLocaleString()}`);
-  lines.push(`---------------------------------`);
-  lines.push(`🍳 *KITCHEN PREPARATION SUMMARY:*`);
-
-  Object.entries(itemCounts).forEach(([name, count], idx) => {
-    lines.push(`• [${count}x] ${name}`);
-  });
-
   lines.push(`---------------------------------`);
   lines.push(`🛵 *ORDER RUN SHEET & DISPATCH:*`);
   targetOrders.forEach((o, i) => {
@@ -1001,7 +1033,7 @@ app.post('/api/orders/collate-whatsapp', (req: Request, res: Response) => {
   lines.push(`Generated from ${db.settings.restaurantName} Orders Management System`);
 
   const collatedText = lines.join('\n');
-  const targetPhone = db.settings.whatsappNumber;
+  const targetPhone = db.settings.kitchenWhatsappNumber || db.settings.whatsappNumber;
   const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(collatedText)}`;
 
   res.json({

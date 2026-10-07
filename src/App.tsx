@@ -556,6 +556,16 @@ export default function App() {
               <p className="text-slate-400">
                 Direct WhatsApp Hotline: <strong className="text-white">+{settings.whatsappNumber}</strong>
               </p>
+              <div className="pt-1">
+                <a
+                  href={`https://wa.me/${settings.whatsappNumber}?text=${encodeURIComponent("Hello! I have a general inquiry about " + settings.restaurantName)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-500 hover:text-slate-300 transition-colors text-[11px] inline-flex items-center gap-1 underline underline-offset-2"
+                >
+                  <span>Catering or general inquiries? Chat on WhatsApp</span>
+                </a>
+              </div>
             </div>
 
             {/* Col 3: Kitchen & Admin access */}

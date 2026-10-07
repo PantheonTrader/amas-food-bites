@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ShoppingBag,
   Package,
@@ -47,6 +47,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   >('orders');
 
   const isStaff = currentUser?.role === 'staff';
+
+  useEffect(() => {
+    if (isStaff && activeTab === 'history') {
+      setActiveTab('orders');
+    }
+  }, [isStaff, activeTab]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col">
@@ -120,17 +126,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <span>Active Orders & Kitchen</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('history')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'history'
-                ? 'border-amber-400 text-amber-300 bg-slate-800/60'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <History className="w-4 h-4" />
-            <span>Order History & Analytics</span>
-          </button>
+          {!isStaff && (
+            <button
+              onClick={() => setActiveTab('history')}
+              className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+                activeTab === 'history'
+                  ? 'border-amber-400 text-amber-300 bg-slate-800/60'
+                  : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <History className="w-4 h-4" />
+              <span>Order History & Analytics</span>
+            </button>
+          )}
 
           <button
             onClick={() => setActiveTab('inventory')}

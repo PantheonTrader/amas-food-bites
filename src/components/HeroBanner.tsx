@@ -61,14 +61,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ settings, onOrderNowClic
             <ArrowDown className="w-5 h-5 animate-bounce" />
           </button>
 
-          <a
-            href={`https://wa.me/${settings.whatsappNumber}?text=${encodeURIComponent("Hello! I'd like to make an inquiry at " + settings.restaurantName)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold text-sm sm:text-base px-6 py-4 rounded-full border border-white/20 backdrop-blur-sm transition-colors"
-          >
-            <span>💬 Chat on WhatsApp</span>
-          </a>
+
         </div>
 
         {/* Footer Notes from flyer: Fresh meals • Fast delivery • Right to your door */}

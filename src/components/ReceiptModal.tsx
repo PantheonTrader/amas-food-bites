@@ -17,7 +17,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, settings, onC
     if (!receiptRef.current) return;
     setDownloading(true);
 
-    htmlToImage.toPng(receiptRef.current, { quality: 0.95, bgcolor: '#ffffff' })
+    htmlToImage.toPng(receiptRef.current, { quality: 0.95, backgroundColor: '#ffffff' })
       .then((dataUrl) => {
         const link = document.createElement('a');
         link.download = `receipt-${order.orderNumber || 'order'}.png`;

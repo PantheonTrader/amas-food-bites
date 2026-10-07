@@ -11,6 +11,9 @@ const DEFAULT_DATA = {
     isStoreClosed: false,
     deliveryFee: 1000,
     currencySymbol: '₦',
+    bankName: 'Moniepoint MFB',
+    bankAccountNumber: '8138788589',
+    bankAccountName: "Ama's Food & Bites",
   },
   categories: [
     { id: 'cat_rice', name: 'Rice & Specials', order: 1 },
@@ -74,7 +77,15 @@ const DEFAULT_DATA = {
 function getLocalDb() {
   try {
     const saved = localStorage.getItem('amas_local_db');
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.settings) {
+        if (!parsed.settings.bankAccountNumber) parsed.settings.bankAccountNumber = '8138788589';
+        if (!parsed.settings.bankName) parsed.settings.bankName = 'Moniepoint MFB';
+        if (!parsed.settings.bankAccountName) parsed.settings.bankAccountName = parsed.settings.restaurantName || "Ama's Food & Bites";
+      }
+      return parsed;
+    }
   } catch {}
   localStorage.setItem('amas_local_db', JSON.stringify(DEFAULT_DATA));
   return DEFAULT_DATA;
@@ -270,7 +281,7 @@ export async function placeOrder(orderPayload: {
 
     const newOrder: Order = {
       id: 'ord_' + Math.random().toString(36).substring(2, 9),
-      orderNumber: Math.floor(1000 + Math.random() * 9000),
+      orderNumber: String(Math.floor(1000 + Math.random() * 9000)),
       createdAt: new Date().toISOString(),
       customerName: orderPayload.customerName,
       customerPhone: orderPayload.customerPhone,
@@ -281,13 +292,12 @@ export async function placeOrder(orderPayload: {
       subtotal,
       deliveryFee,
       total,
-      status: 'pending',
+      status: 'Pending',
     };
 
     db.orders.unshift(newOrder);
     saveLocalDb(db);
 
-    const secureHash = 'SEC-' + Math.random().toString(36).substring(2, 8).toUpperCase() + '-' + newOrder.orderNumber;
     const lines: string[] = [];
     lines.push(`🍔 *NEW ORDER — ${db.settings.restaurantName.toUpperCase()}* 🍔`);
     lines.push(`*Order ID:* ${newOrder.orderNumber}`);
@@ -307,19 +317,17 @@ export async function placeOrder(orderPayload: {
     lines.push(`*ITEMS ORDERED:*`);
     newOrder.items.forEach((item: any, index: number) => {
       let itemLine = `${index + 1}. *${item.quantity}x ${item.name}*`;
-      const itemTotal = item.price * item.quantity;
+      if (item.addonName) itemLine += ` + ${item.addonName}`;
+      const itemTotal = (item.price + (item.addonPrice || 0)) * item.quantity;
       itemLine += ` — ${db.settings.currencySymbol}${itemTotal.toLocaleString()}`;
       lines.push(itemLine);
     });
     lines.push(`---------------------------------`);
     lines.push(`*Subtotal:* ${db.settings.currencySymbol}${newOrder.subtotal.toLocaleString()}`);
-    if (newOrder.deliveryType === 'delivery') {
+    if (newOrder.deliveryFee > 0) {
       lines.push(`*Delivery Fee:* ${db.settings.currencySymbol}${newOrder.deliveryFee.toLocaleString()}`);
     }
     lines.push(`*GRAND TOTAL:* *${db.settings.currencySymbol}${newOrder.total.toLocaleString()}*`);
-    lines.push(`---------------------------------`);
-    lines.push(`🔒 *Secure Verification Code:* ${secureHash}`);
-    lines.push(`*(Cross-check with Admin Dashboard to confirm authenticity)*`);
     lines.push(`---------------------------------`);
     lines.push(`Please confirm this order and provide estimated preparation time. Thank you!`);
 
@@ -428,10 +436,36 @@ export async function collateOrdersForWhatsApp(
     const db = getLocalDb();
     const targetOrders = orderIds
       ? db.orders.filter((o: any) => orderIds.includes(o.id))
-      : db.orders;
+      : db.orders.filter((o: any) => o.status === 'Confirmed');
+
+    if (targetOrders.length === 0) {
+      throw new Error('No confirmed orders available to send to the kitchen. (Please confirm order payment status first).');
+    }
     const totalRevenue = targetOrders.reduce((sum: number, o: any) => sum + o.total, 0);
-    const collatedText = `Batch Order Summary: ${targetOrders.length} orders, Total: ${db.settings.currencySymbol}${totalRevenue}`;
-    const whatsappUrl = `https://wa.me/${db.settings.whatsappNumber}?text=${encodeURIComponent(collatedText)}`;
+    const lines: string[] = [];
+    lines.push(`🍳 *${db.settings.restaurantName.toUpperCase()} — KITCHEN ORDER DISPATCH (CONFIRMED PAYMENTS)* 🍳`);
+    lines.push(`📅 *Date:* ${new Date().toLocaleDateString('en-GB')} | ${new Date().toLocaleTimeString('en-GB')}`);
+    lines.push(`📦 *Total Confirmed Orders:* ${targetOrders.length}`);
+    lines.push(`💰 *Total Order Value:* ${db.settings.currencySymbol}${totalRevenue.toLocaleString()}`);
+    lines.push(`---------------------------------`);
+    lines.push(`🛵 *ORDER RUN SHEET & DISPATCH:*`);
+    targetOrders.forEach((o: any, i: number) => {
+      const typeTag = o.deliveryType === 'delivery' ? '🛵 Delivery' : '🏪 Pickup';
+      lines.push(`\n*#${i + 1} [${o.orderNumber}]* — ${typeTag} (${o.status})`);
+      lines.push(`👤 ${o.customerName} (📞 ${o.customerPhone})`);
+      if (o.deliveryAddress) {
+        lines.push(`📍 ${o.deliveryAddress}`);
+      }
+      const itemsShort = o.items.map((it: any) => `${it.quantity}x ${it.name}${it.addonName ? ` + ${it.addonName}` : ''}${it.note ? ` (${it.note})` : ''}`).join(', ');
+      lines.push(`🍽️ ${itemsShort}`);
+      lines.push(`💵 Total: ${db.settings.currencySymbol}${o.total.toLocaleString()}`);
+    });
+    lines.push(`\n---------------------------------`);
+    lines.push(`Generated from ${db.settings.restaurantName} Orders Management System`);
+
+    const collatedText = lines.join('\n');
+    const targetPhone = db.settings.kitchenWhatsappNumber || db.settings.whatsappNumber;
+    const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(collatedText)}`;
     return {
       success: true,
       totalOrders: targetOrders.length,

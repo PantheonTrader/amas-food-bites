@@ -68,16 +68,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span>{isLiveConnected ? 'Live Stock' : 'Connecting'}</span>
           </div>
 
-          {/* Quick WhatsApp contact link */}
-          <a
-            href={`https://wa.me/${settings.whatsappNumber}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden lg:flex items-center gap-1.5 text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-full transition-colors font-medium border border-white/15"
-          >
-            <PhoneCall className="w-3.5 h-3.5 text-amber-300" />
-            <span>Chat +{settings.whatsappNumber}</span>
-          </a>
+
 
           {/* Admin access button */}
           <button
